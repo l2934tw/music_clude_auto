@@ -8,7 +8,7 @@ const DATA_DIR = fs.existsSync('/app/data')
 const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
 
 const DEFAULTS = {
-  prefix: '!',
+  prefix: '~',
   defaultVolume: 100,
   idleDisconnectSeconds: 10,
   emptyVcDisconnectSeconds: 60,
@@ -16,7 +16,7 @@ const DEFAULTS = {
   presenceMode: 'automatic',
   presenceStatus: 'online',
   presenceActivityType: 'competing',
-  presenceActivityText: '🏆 The Ultimate DJ Battle',
+  presenceActivityText: '🏆 Radio Youtube',
 };
 
 let state = {
