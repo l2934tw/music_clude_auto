@@ -1,0 +1,12 @@
+node_modules/
+.env
+*.log
+.DS_Store
+*.zip
+*.bak
+cookies.txt
+cookies_base64.txt
+.claude/
+.superpowers/
+data/
+docs/

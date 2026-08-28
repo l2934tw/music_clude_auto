@@ -1,0 +1,13 @@
+node_modules
+npm-debug.log
+.env
+.git
+.gitignore
+*.bak
+*.zip
+cookies.txt
+cookies_base64.txt
+fly.toml
+README.md
+.claude
+data
