@@ -372,15 +372,15 @@ client.on('interactionCreate', async (interaction) => {
   // Queue picker — select menu produces this; action buttons follow it
   if (interaction.isStringSelectMenu() && interaction.customId === 'queue_pick') {
     const sq = queue.get(interaction.guild.id);
-    if (!sq) return interaction.reply({ content: '❌ Nothing is playing.', ephemeral: true });
+    if (!sq) return interaction.reply({ content: '❌ koskhol yechi play kon aval.', ephemeral: true });
     const songId = interaction.values[0];
     const song = sq.songs.find((s) => s.id === songId);
-    if (!song) return interaction.reply({ content: '❌ Song no longer in queue.', ephemeral: true });
+    if (!song) return interaction.reply({ content: '❌ ahang dige to saf nist.', ephemeral: true });
 
     const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId(`qa_play:${songId}`).setLabel('▶️ Play Now').setStyle(ButtonStyle.Primary),
-      new ButtonBuilder().setCustomId(`qa_next:${songId}`).setLabel('⏫ Move to Top').setStyle(ButtonStyle.Secondary),
-      new ButtonBuilder().setCustomId(`qa_remove:${songId}`).setLabel('🗑️ Remove').setStyle(ButtonStyle.Danger),
+      new ButtonBuilder().setCustomId(`qa_play:${songId}`).setLabel('▶️ gosh kon').setStyle(ButtonStyle.Primary),
+      new ButtonBuilder().setCustomId(`qa_next:${songId}`).setLabel('⏫ bekesh bala').setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder().setCustomId(`qa_remove:${songId}`).setLabel('🗑️ pakesh kon').setStyle(ButtonStyle.Danger),
     );
     return interaction.reply({
       content: `What do you want to do with **${song.title}**?`,
@@ -392,17 +392,17 @@ client.on('interactionCreate', async (interaction) => {
   // Queue action buttons (from the picker)
   if (interaction.isButton() && interaction.customId.startsWith('qa_')) {
     const sq = queue.get(interaction.guild.id);
-    if (!sq) return interaction.reply({ content: '❌ Nothing is playing.', ephemeral: true });
+    if (!sq) return interaction.reply({ content: '❌ koskhol yechi play kon.', ephemeral: true });
     const [action, songId] = interaction.customId.split(':');
     const songIndex = sq.songs.findIndex((s) => s.id === songId);
     if (songIndex === -1 || songIndex === 0) {
-      return interaction.update({ content: '❌ That song is no longer in the queue.', components: [] });
+      return interaction.update({ content: '❌ ahang dige to saf nist.', components: [] });
     }
     const song = sq.songs[songIndex];
 
     if (action === 'qa_remove') {
       sq.songs.splice(songIndex, 1);
-      return interaction.update({ content: `🗑️ Removed **${song.title}**.`, components: [] });
+      return interaction.update({ content: `🗑️ hazfshod **${song.title}**.`, components: [] });
     }
     if (action === 'qa_next') {
       sq.songs.splice(songIndex, 1);
@@ -423,10 +423,10 @@ client.on('interactionCreate', async (interaction) => {
     const [, sessionId, indexStr] = interaction.customId.split(':');
     const session = searchSessions.get(sessionId);
     if (!session) {
-      return interaction.reply({ content: '❌ This search has expired.', ephemeral: true });
+      return interaction.reply({ content: '❌ time searchet tamom shod.', ephemeral: true });
     }
     if (session.requesterId !== interaction.user.id) {
-      return interaction.reply({ content: '❌ Only the user who ran the search can pick.', ephemeral: true });
+      return interaction.reply({ content: '❌ faghat oni ke mano ovorde haghe entekhab dare -MyLord.', ephemeral: true });
     }
     const video = session.results[parseInt(indexStr, 10)];
     if (!video) {
@@ -435,7 +435,7 @@ client.on('interactionCreate', async (interaction) => {
     searchSessions.delete(sessionId);
 
     if (!interaction.member?.voice?.channel) {
-      return interaction.reply({ content: '❌ Join a voice channel first.', ephemeral: true });
+      return interaction.reply({ content: '❌ koskhol aval boro to ye voice.', ephemeral: true });
     }
     await interaction.update({ components: [] });
 
@@ -462,19 +462,19 @@ client.on('interactionCreate', async (interaction) => {
 
   if (!memberVoiceChannel || memberVoiceChannel.id !== serverQueue.voiceChannel.id) {
     return interaction.reply({
-      content: '❌ Join the same voice channel as the bot to use these controls.',
+      content: '❌ bia pisham azizam natars karit nadaram mikham ahangeto bezaram.',
       ephemeral: true,
     });
   }
 
   if (interaction.customId === 'music_skip') {
     skipQueue(serverQueue);
-    return interaction.reply('⏭️ Skipped!');
+    return interaction.reply('⏭️ berim baedi!');
   }
 
   if (interaction.customId === 'music_stop') {
     stopQueue(interaction.guild.id, serverQueue);
-    return interaction.reply('⏹️ Stopped!');
+    return interaction.reply('⏹️ vaysad!');
   }
 
   if (interaction.customId === 'music_queue') {
@@ -488,8 +488,8 @@ client.on('interactionCreate', async (interaction) => {
     else if (serverQueue.loop === 'song') serverQueue.loop = 'queue';
     else serverQueue.loop = null;
     const label = serverQueue.loop === 'song' ? '🔂 Looping current song'
-      : serverQueue.loop === 'queue' ? '🔁 Looping entire queue'
-      : '➡️ Loop disabled';
+      : serverQueue.loop === 'queue' ? '🔁 faghat hamino play mikonam dige'
+      : '➡️dafe akhare ino play mikonam';
     // Refresh the card so the loop button reflects new state
     const song = serverQueue.songs[0];
     if (song && serverQueue.nowPlayingMessage) {
@@ -503,7 +503,7 @@ client.on('interactionCreate', async (interaction) => {
 
   if (interaction.customId === 'np_shuffle') {
     if (serverQueue.songs.length < 3) {
-      return interaction.reply({ content: '❌ Need at least 2 upcoming songs to shuffle.', ephemeral: true });
+      return interaction.reply({ content: '❌ koskhol hadaghal 2 ta ahang bezar bad shuffel kon.', ephemeral: true });
     }
     const upcoming = serverQueue.songs.slice(1);
     for (let i = upcoming.length - 1; i > 0; i--) {
@@ -535,10 +535,10 @@ client.on('interactionCreate', async (interaction) => {
     const isPaused = serverQueue.player.state.status === AudioPlayerStatus.Paused;
     if (isPaused) {
       resumePlayer(serverQueue);
-      return interaction.reply({ content: '▶️ Resumed', ephemeral: true });
+      return interaction.reply({ content: '▶️ edame midam', ephemeral: true });
     } else {
       pausePlayer(serverQueue);
-      return interaction.reply({ content: '⏸️ Paused', ephemeral: true });
+      return interaction.reply({ content: '⏸️ vaysadam', ephemeral: true });
     }
   }
 
@@ -546,7 +546,7 @@ client.on('interactionCreate', async (interaction) => {
     const delta = parseInt(interaction.customId.split(':')[1], 10);
     const song = serverQueue.songs[0];
     if (!song) {
-      return interaction.reply({ content: '❌ Nothing is playing.', ephemeral: true });
+      return interaction.reply({ content: '❌ hoy koskhol yechi play kon.', ephemeral: true });
     }
     const elapsed = getElapsedSeconds(serverQueue);
     let target = elapsed + delta;
@@ -554,7 +554,7 @@ client.on('interactionCreate', async (interaction) => {
     if (song.duration && target >= song.duration - 1) {
       // Seeking past end → just skip
       skipQueue(serverQueue);
-      return interaction.reply({ content: '⏭️ Past end — skipped.', ephemeral: true });
+      return interaction.reply({ content: '⏭️ berim ta tahesh — rad shod.', ephemeral: true });
     }
     await interaction.deferUpdate().catch(() => {});
     await playSong(interaction.guild.id, song, target);
@@ -574,7 +574,7 @@ client.on('interactionCreate', async (interaction) => {
 
     if (result.status === 'playing') {
       return interaction.reply({
-        content: '▶️ That song is already playing.',
+        content: '▶️ in ahang hamin alan dare play mishe spam nade koskhol.',
         ephemeral: true,
       });
     }
@@ -584,14 +584,14 @@ client.on('interactionCreate', async (interaction) => {
     });
 
     skipQueue(serverQueue);
-    return interaction.followUp(`▶️ Starting next: **${result.song.title}**`);
+    return interaction.followUp(`▶️ alan baedio play mikonam: **${result.song.title}**`);
   }
 });
 
 async function execute(message, serverQueue, args) {
   const voiceChannel = message.member?.voice?.channel;
   const PREFIX = getPrefix(message.guild.id);
-  if (!voiceChannel) return message.reply('❌ You need to be in a voice channel!');
+  if (!voiceChannel) return message.reply('❌ koskhol aval boro to ye voice!');
   if (!args.length) return message.reply(`Usage: \`${PREFIX}play <song name or URL>\``);
 
   const guildId = message.guild.id;
@@ -611,7 +611,7 @@ async function execute(message, serverQueue, args) {
       const searchResult = await ytSearch(searchText);
       const video = searchResult.videos?.[0];
       if (!video) {
-        await statusMsg.edit('❌ No results found.').catch(() => {});
+        await statusMsg.edit('❌ hichi peyda nakardam kiram to search kardanet.').catch(() => {});
         return;
       }
       song = {
@@ -625,7 +625,7 @@ async function execute(message, serverQueue, args) {
     }
   } catch (err) {
     console.error('Search error:', err);
-    await statusMsg.edit('❌ Could not resolve song metadata.').catch(() => {});
+    await statusMsg.edit('❌ dastam be ahang nemirese.').catch(() => {});
     return;
   }
 
@@ -640,13 +640,13 @@ async function execute(message, serverQueue, args) {
       await statusMsg.edit('⏳ Joining a voice channel — your song will be queued...').catch(() => {});
       const joined = await waitForQueue(guildId, 15_000);
       if (!joined) {
-        await statusMsg.edit('❌ Voice join took too long, try again.').catch(() => {});
+        await statusMsg.edit('❌ baba kiram to iran connect nemisham.').catch(() => {});
         return;
       }
       // Fall through to append path
       serverQueue = queue.get(guildId);
       if (!serverQueue) {
-        await statusMsg.edit('❌ Bot left before your song could be queued.').catch(() => {});
+        await statusMsg.edit('❌ eh dashtam load mikardam chera endakhti biron.').catch(() => {});
         return;
       }
       return await appendAndMaybePlay(guildId, serverQueue, song, statusMsg);
@@ -766,7 +766,7 @@ async function bootstrapAndPlay(message, voiceChannel, song, statusMsg) {
       } catch {
         const currentQueue = queue.get(guildId);
         if (currentQueue && !currentQueue.stopped) {
-          currentQueue.textChannel.send('❌ Lost voice connection. Stopping playback.').catch(() => {});
+          currentQueue.textChannel.send('❌ kiram to iran disconnect shodam dige play nemikonam.').catch(() => {});
           teardownQueue(guildId, currentQueue, true);
         } else {
           try { connection.destroy(); } catch {}
@@ -1099,38 +1099,38 @@ function getPublicPlayErrorMessage(reason) {
   const message = reason.toLowerCase();
 
   if (message.includes('sign in to confirm') || message.includes('not a bot')) {
-    return 'YouTube blocked this request for bot verification. Please try a different video or search term.';
+    return 'youtube nemizare ino play konam nemidonam chera ye ahange dige bezar ino nemishe karish kard.';
   }
 
   if (message.includes('private video')) {
-    return 'That video is private.';
+    return 'in video private e koskhol.';
   }
 
   if (message.includes('unavailable')) {
-    return 'That video is unavailable from the bot server.';
+    return 'to serveraye man in ahang nist az youtube play kon.';
   }
 
   if (message.includes('age-restricted') || message.includes('age restricted')) {
-    return 'That video is age restricted.';
+    return 'IN VIDEO PORNE TO YOUTBE??.';
   }
 
   if (message.includes('copyright') || message.includes('blocked')) {
-    return 'That video is blocked for playback.';
+    return 'play nemishe chera blockam kard youtube.';
   }
 
   if (message.includes('did not return an audio url') || message.includes('requested format is not available')) {
-    return 'I could not get a playable audio stream for that track.';
+    return 'Nemitonam playesh konam che margeshe akhe.';
   }
 
   if (message.includes('timed out')) {
-    return 'YouTube took too long to prepare the audio stream. Please try again.';
+    return 'vaysa iraniam bayad vpn bezanam youtube biad ta vpn on mishe ye bar dige try kon.';
   }
 
   if (message.includes('ffmpeg')) {
-    return 'The audio stream failed while starting.';
+    return 'vaysa ridam az aval play kon.';
   }
 
-  return 'Please try another link or song name.';
+  return 'ye ahang dige play kon ridam.';
 }
 
 async function getAudioUrl(url) {
@@ -1218,13 +1218,13 @@ function advanceQueue(guildId, serverQueue, delayNext, errorReason = null) {
 
   if (errorReason) {
     console.log('⚠️ Queue empty after playback error, disconnecting soon');
-    serverQueue.textChannel.send(`⚠️ Playback stopped. ${errorReason} Disconnecting in 5 seconds.`);
+    serverQueue.textChannel.send(`⚠️ dige play nemishee. ${errorReason} Disconnecting in 5 seconds.`);
     scheduleIdleDisconnect(guildId, serverQueue, ERROR_DISCONNECT_MS);
     return;
   }
 
-  console.log('✅ Queue empty, disconnecting soon');
-  serverQueue.textChannel.send('✅ Queue finished! Disconnecting in 10 seconds unless you add another song.');
+  console.log('✅ dige ahangi nist, kone laghe hamaton');
+  serverQueue.textChannel.send('✅ ahanga tamom shod, 10 sanie vaght dari ahang jadid add bedi vagarna kone laghe hamaton.');
   scheduleIdleDisconnect(guildId, serverQueue, getIdleDisconnectMs(guildId));
 }
 
@@ -1925,9 +1925,9 @@ async function playlistCommand(message, serverQueue, args) {
   if (!url || !isUrl(url)) return message.reply(`❌ Usage: \`${PREFIX}playlist <youtube playlist url>\``);
 
   const voiceChannel = message.member?.voice?.channel;
-  if (!voiceChannel) return message.reply('❌ You need to be in a voice channel!');
+  if (!voiceChannel) return message.reply('❌ koskhol aval boro to voice!');
 
-  const status = await message.reply('📥 Loading playlist...');
+  const status = await message.reply('📥 bezar bebinam chi to in playliste...');
   let info;
   try {
     info = await runYtdlp(url, {
@@ -1978,8 +1978,8 @@ async function playlistCommand(message, serverQueue, args) {
 // YouTube video, or the mix comes back empty, we fall back to keyword search
 // built from the seed's artist/title.
 
-const AUTO_PLAYLIST_DEFAULT_COUNT = 10;
-const AUTO_PLAYLIST_MAX_COUNT = 40;
+const AUTO_PLAYLIST_DEFAULT_COUNT = 60;
+const AUTO_PLAYLIST_MAX_COUNT = 80;
 // Skip hour-long compilations/"best of" uploads that pollute mixes, unless the
 // seed itself is that long (then the user clearly wants long-form audio).
 const AUTO_PLAYLIST_MAX_DURATION = 1800; // 30 minutes
@@ -2163,7 +2163,7 @@ async function autoPlaylistCommand(message, serverQueue, args) {
     return message.reply('❌ You need to be in a voice channel!');
   }
 
-  const status = await message.reply('🎧 **Building an auto playlist...**');
+  const status = await message.reply('🎧 **oke dokie ye playlist misazam ba in ahang...**');
 
   // ── 1. Resolve the seed track
   let seedSong = currentSong;
@@ -2175,7 +2175,7 @@ async function autoPlaylistCommand(message, serverQueue, args) {
         const searchResult = await ytSearch(seedQuery);
         const candidate = toCandidate(searchResult.videos?.[0]);
         if (!candidate) {
-          await status.edit('❌ No results found for that song.').catch(() => {});
+          await status.edit('❌ hichi ba esme in ahang peyda nakardamm.').catch(() => {});
           return;
         }
         seedSong = candidateToSong(candidate);
@@ -2204,7 +2204,7 @@ async function autoPlaylistCommand(message, serverQueue, args) {
   }
   if (!seedSong) seedSong = serverQueue.songs[0];
   if (!seedSong) {
-    await status.edit('❌ Nothing is playing.').catch(() => {});
+    await status.edit('❌ yechi play kon aval koskhol.').catch(() => {});
     return;
   }
 
